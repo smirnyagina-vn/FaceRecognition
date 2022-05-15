@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "816057224595",
+    "project_id": "faceauth-007",
+    "storage_bucket": "faceauth-007.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816057224595:android:de96867768d69bfe72ac66",
+        "android_client_info": {
+          "package_name": "com.example.facerecognition"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "816057224595-l45okbvvtedfc8nd89uvhu61i2ajuien.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDj9kI0PRFpdbWMFx0gHxq2X81ka0MT5cU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "816057224595-l45okbvvtedfc8nd89uvhu61i2ajuien.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
