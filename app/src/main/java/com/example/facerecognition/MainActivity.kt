@@ -41,17 +41,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var cameraExecutor: ExecutorService
 
-    // High-accuracy landmark detection and face classification
-    private val highAccuracyOpts = FaceDetectorOptions.Builder()
-        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
-        .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
-        .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
-        .build()
-
-    // Real-time contour detection
-    private val realTimeOpts = FaceDetectorOptions.Builder()
-        .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,14 +120,15 @@ class MainActivity : AppCompatActivity() {
             imageCapture = ImageCapture.Builder().build()
 
 
-            val imageAnalyzer = ImageAnalysis.Builder().build()
+            val imageAnalyzer = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
                 .also {
                     it.setAnalyzer(
                         cameraExecutor,
                         LuminosityAnalyzer()
                     )
                 }
-
 
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
@@ -200,11 +190,7 @@ class MainActivity : AppCompatActivity() {
 
                 val options = FaceDetectorOptions.Builder()
                     .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
-                    //.setLandmarkMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-                    //.setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
                     .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
-                    .setMinFaceSize(0.15f)
-                    .enableTracking()
                     .build()
 
                 // Get instance of face detector
