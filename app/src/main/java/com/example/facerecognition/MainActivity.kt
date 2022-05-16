@@ -3,6 +3,7 @@ package com.example.facerecognition
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
@@ -23,6 +24,11 @@ import android.provider.MediaStore
 
 import android.content.ContentValues
 import android.os.Build
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.FaceContour
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
+import com.google.mlkit.vision.face.FaceLandmark
 
 typealias LumaListener = (luma: Double) -> Unit
 
@@ -33,10 +39,19 @@ class MainActivity : AppCompatActivity() {
 
     private var imageCapture: ImageCapture? = null
 
-    private var videoCapture: VideoCapture<Recorder>? = null
-    private var recording: Recording? = null
-
     private lateinit var cameraExecutor: ExecutorService
+
+    // High-accuracy landmark detection and face classification
+    private val highAccuracyOpts = FaceDetectorOptions.Builder()
+        .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+        .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
+        .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+        .build()
+
+    // Real-time contour detection
+    private val realTimeOpts = FaceDetectorOptions.Builder()
+        .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,12 +128,6 @@ class MainActivity : AppCompatActivity() {
                     it.setSurfaceProvider(viewBinding.viewFinder.surfaceProvider)
                 }
 
-            val recorder = Recorder.Builder()
-                .setQualitySelector(QualitySelector.from(Quality.HIGHEST,
-                    FallbackStrategy.higherQualityOrLowerThan(Quality.SD)))
-                .build()
-            videoCapture = VideoCapture.withOutput(recorder)
-
             imageCapture = ImageCapture.Builder().build()
 
 
@@ -126,9 +135,7 @@ class MainActivity : AppCompatActivity() {
                 .also {
                     it.setAnalyzer(
                         cameraExecutor,
-                        LuminosityAnalyzer { luma ->
-                            Log.d(TAG, "Average luminosity: $luma")
-                        }
+                        LuminosityAnalyzer()
                     )
                 }
 
@@ -172,7 +179,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private class LuminosityAnalyzer(private val listener: LumaListener) : ImageAnalysis.Analyzer {
+    private class LuminosityAnalyzer : ImageAnalysis.Analyzer {
 
         private fun ByteBuffer.toByteArray(): ByteArray {
             rewind()    // Rewind the buffer to zero
@@ -181,18 +188,81 @@ class MainActivity : AppCompatActivity() {
             return data // Return the byte array
         }
 
-        override fun analyze(image: ImageProxy) {
-
-            val buffer = image.planes[0].buffer
-            val data = buffer.toByteArray()
-            val pixels = data.map { it.toInt() and 0xFF }
-            val luma = pixels.average()
+        @SuppressLint("UnsafeOptInUsageError")
+        override fun analyze(imageProxy: ImageProxy) {
 
             println("Analyze log message")
 
-            listener(luma)
+            val mediaImage = imageProxy.image
+            if (mediaImage != null) {
+                val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                // Pass image to an ML Kit Vision API
 
-            image.close()
+                val options = FaceDetectorOptions.Builder()
+                    .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+                    .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
+                    .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+                    .setMinFaceSize(0.15f)
+                    .enableTracking()
+                    .build()
+
+                // Get instance of face detector
+                val detector = FaceDetection.getClient(options)
+
+                val result = detector.process(image)
+                    .addOnSuccessListener { faces ->
+                        // Task completed successfully
+                        println("Task completed successfully")
+
+                        for (face in faces) {
+                            val bounds = face.boundingBox
+                            val rotY = face.headEulerAngleY // Head is rotated to the right rotY degrees
+                            val rotZ = face.headEulerAngleZ // Head is tilted sideways rotZ degrees
+
+                            // If landmark detection was enabled (mouth, ears, eyes, cheeks, and
+                            // nose available):
+                            val leftEar = face.getLandmark(FaceLandmark.LEFT_EAR)
+                            leftEar?.let {
+                                val leftEarPos = leftEar.position
+                                println("\n leftEarPos:$leftEarPos")
+                            }
+
+                            // If contour detection was enabled:
+                            val leftEyeContour = face.getContour(FaceContour.LEFT_EYE)?.points
+                            val upperLipBottomContour = face.getContour(FaceContour.UPPER_LIP_BOTTOM)?.points
+
+                            // If classification was enabled:
+                            if (face.smilingProbability != null) {
+                                val smileProb = face.smilingProbability
+                                println("\n smileProb:$smileProb")
+                            }
+                            if (face.rightEyeOpenProbability != null) {
+                                val rightEyeOpenProb = face.rightEyeOpenProbability
+                                println("\n rightEyeOpenProb:$rightEyeOpenProb")
+                            }
+
+                            // If face tracking was enabled:
+                            if (face.trackingId != null) {
+                                val id = face.trackingId
+                            }
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        // Task failed with an exception
+                        println("Task failed with an exception")
+                    }
+                    .addOnCompleteListener {
+                        mediaImage?.close()
+                        imageProxy.close() }
+
+            }
+
+            //listener(luma)
+
+            //listener()
+
+            imageProxy.close()
+            mediaImage?.close()
         }
     }
 
