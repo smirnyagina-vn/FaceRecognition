@@ -1,23 +1,36 @@
 package com.example.facerecognition
 
 import android.Manifest
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import com.example.facerecognition.databinding.ActivityMainBinding
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.facerecognition.MainActivity.Companion.REQUEST_CODE_PERMISSIONS
+import com.example.facerecognition.databinding.ActivityMainBinding
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
+
+const val DATABASE_URL = "https://faceauth-007-default-rtdb.europe-west1.firebasedatabase.app/"
+const val USER_DIR = "Users"
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewBinding: ActivityMainBinding
 
+    private lateinit var userDatabase: DatabaseReference
+
+    private lateinit var userMetadata: UserMetadata
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        userDatabase = Firebase.database(DATABASE_URL).reference
+
         super.onCreate(savedInstanceState)
         viewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
@@ -32,6 +45,27 @@ class MainActivity : AppCompatActivity() {
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
+    }
+
+    private fun testDatabase()
+    {
+        val testUser = UserMetadata("login1")
+
+        userDatabase.child(USER_DIR).child(testUser.userLogin).setValue(testUser)
+
+        getUserByLoginFromDB(testUser.userLogin)
+    }
+
+    private fun getUserByLoginFromDB(userLogin : String)
+    {
+        userDatabase.child(USER_DIR).child(userLogin).get().addOnSuccessListener {
+            Log.i("firebase", "Got value ${it.value}")
+            userMetadata = UserMetadata(it.child(UserMetadata.USER_LOGIN).value as String?)
+            Log.i("Firebase user", "\nUser login:  ${userMetadata.userLogin}")
+
+        }.addOnFailureListener{
+            Log.e("firebase", "Error getting data", it)
+        }
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
