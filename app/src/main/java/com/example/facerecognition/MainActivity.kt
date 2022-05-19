@@ -5,7 +5,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
+import android.view.View
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -14,6 +18,7 @@ import com.example.facerecognition.databinding.ActivityMainBinding
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlin.math.log
 
 
 const val DATABASE_URL = "https://faceauth-007-default-rtdb.europe-west1.firebasedatabase.app/"
@@ -40,11 +45,20 @@ class MainActivity : AppCompatActivity() {
             // Set up the listeners for start rec buttons
             viewBinding.authorizationButton.setOnClickListener { startRecognition() }
             viewBinding.registrationButton.setOnClickListener { startRecognition() }
+
         } else {
             ActivityCompat.requestPermissions(
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
+    }
+
+    private fun getUserLogin() : String
+    {
+        var editTextHello = findViewById(R.id.login_edit_text) as EditText
+        var login = editTextHello.text.toString()
+        Log.i("EditText: ", "User login: $login")
+        return login
     }
 
     private fun testDatabase()
@@ -91,6 +105,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startRecognition() {
+        val login = getUserLogin()
         val intent = Intent(this, RecognizeActivity::class.java)
         startActivity(intent)
     }
