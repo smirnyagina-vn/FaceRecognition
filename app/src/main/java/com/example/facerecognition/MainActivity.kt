@@ -3,6 +3,9 @@ package com.example.facerecognition
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import com.google.mlkit.vision.face.FaceContour
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -18,6 +21,7 @@ import com.example.facerecognition.databinding.ActivityMainBinding
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.mlkit.vision.face.FaceDetector
 import kotlin.math.log
 
 
@@ -30,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var userDatabase: DatabaseReference
 
-    private lateinit var userMetadata: UserMetadata
+    private lateinit var userProfile: UserProfile
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -58,24 +62,28 @@ class MainActivity : AppCompatActivity() {
         var editTextHello = findViewById(R.id.login_edit_text) as EditText
         var login = editTextHello.text.toString()
         Log.i("EditText: ", "User login: $login")
-        return login
+        return if (login == "")
+            "No login"
+        else login
     }
 
     private fun testDatabase()
     {
-        val testUser = UserMetadata("login1")
+        val testUser = UserProfile("login1")
 
         userDatabase.child(USER_DIR).child(testUser.userLogin).setValue(testUser)
 
         getUserByLoginFromDB(testUser.userLogin)
     }
 
+
+
     private fun getUserByLoginFromDB(userLogin : String)
     {
         userDatabase.child(USER_DIR).child(userLogin).get().addOnSuccessListener {
             Log.i("firebase", "Got value ${it.value}")
-            userMetadata = UserMetadata(it.child(UserMetadata.USER_LOGIN).value as String?)
-            Log.i("Firebase user", "\nUser login:  ${userMetadata.userLogin}")
+            userProfile = UserProfile(it.child(UserProfile.USER_LOGIN).value as String?)
+            Log.i("Firebase user", "\nUser login:  ${userProfile.userLogin}")
 
         }.addOnFailureListener{
             Log.e("firebase", "Error getting data", it)
