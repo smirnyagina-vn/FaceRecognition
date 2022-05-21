@@ -19,16 +19,13 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 
-const val DATABASE_URL = "https://faceauth-007-default-rtdb.europe-west1.firebasedatabase.app/"
-const val USER_DIR = "Users"
-
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), IUserDatabase {
 
     private lateinit var viewBinding: ActivityMainBinding
 
     private lateinit var userDatabase: DatabaseReference
 
-    private val registration : Boolean = true
+    private val registrationMode : Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -51,43 +48,22 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun getUserLogin() : String
-    {
-        val editTextHello = findViewById<EditText>(R.id.login_edit_text)
-        val login = editTextHello.text.toString()
-        Log.i("EditText: ", "User login: $login")
-        return if (login == "")
-            "No login"
-        else login
-    }
-
-    private fun setUserProfileToDB(userProfile: UserProfile)
-    {
-        userDatabase.child(USER_DIR).child(userProfile.userLogin).setValue(userProfile)
-    }
-
-
-    private fun getUserByLoginFromDB(userLogin : String)
-    {
-        userDatabase.child(USER_DIR).child(userLogin).get().addOnSuccessListener {
-            Log.i("firebase", "Got value ${it.value}")
-            val userProfile = UserProfile(it.child(UserProfile.USER_LOGIN).value as String?)
-            Log.i("Firebase user", "\nUser login:  ${userProfile.userLogin}")
-
-        }.addOnFailureListener{
-            Log.e("firebase", "Error getting data", it)
-        }
-    }
-
-    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(
-            baseContext, it) == PackageManager.PERMISSION_GRANTED
-    }
-
 
     private fun startRecognition() {
         val login = getUserLogin()
         activityLauncher.launch(login)
+    }
+
+
+    private val activityLauncher = registerForActivityResult(RecognizeActivityContract()) {
+            result ->
+        if (result != null) {
+            if (this.registrationMode)
+                setUserProfileToDB(this.userDatabase, result)
+            else
+                userAuthorization(result)
+        }
+
     }
 
 
@@ -106,21 +82,28 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private val activityLauncher = registerForActivityResult(RecognizeActivityContract()) {
-            result ->
-        if (result != null) {
-            if (this.registration)
-                setUserProfileToDB(result)
-            else
-                userAuthorization(result)
-        }
-
-    }
 
     private fun userAuthorization(userProfile: UserProfile)
     {
 
     }
+
+
+    private fun getUserLogin() : String
+    {
+        val editTextHello = findViewById<EditText>(R.id.login_edit_text)
+        val login = editTextHello.text.toString()
+        Log.i("EditText: ", "User login: $login")
+        return if (login == "")
+            "No login"
+        else login
+    }
+
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(
+            baseContext, it) == PackageManager.PERMISSION_GRANTED
+    }
+
 
     companion object {
         private const val TAG = "FaceRecognitionApp"
