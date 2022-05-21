@@ -1,11 +1,13 @@
 package com.example.facerecognition;
 
-
 import android.graphics.PointF;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class UserMetadata {
+public class UserMetadata implements Parcelable {
 
     public ArrayList<PointF> faceContour;
     public ArrayList<PointF> leftEyeBrowTop;
@@ -58,4 +60,58 @@ public class UserMetadata {
         this.noseBottom = noseBottom;
     }
 
+
+    protected UserMetadata(Parcel in) {
+        faceContour = in.createTypedArrayList(PointF.CREATOR);
+        leftEyeBrowTop = in.createTypedArrayList(PointF.CREATOR);
+        leftEyeBrowBottom = in.createTypedArrayList(PointF.CREATOR);
+        rightEyeBrowTop = in.createTypedArrayList(PointF.CREATOR);
+        rightEyeBrowBottom = in.createTypedArrayList(PointF.CREATOR);
+        leftEyeContour = in.createTypedArrayList(PointF.CREATOR);
+        rightEyeContour = in.createTypedArrayList(PointF.CREATOR);
+        leftCheekCenter = in.createTypedArrayList(PointF.CREATOR);
+        rightCheekCenter = in.createTypedArrayList(PointF.CREATOR);
+        upperLipBottomContour = in.createTypedArrayList(PointF.CREATOR);
+        upperLipTopContour = in.createTypedArrayList(PointF.CREATOR);
+        lowerLipBottomContour = in.createTypedArrayList(PointF.CREATOR);
+        lowerLipTopContour = in.createTypedArrayList(PointF.CREATOR);
+        noseBridge = in.createTypedArrayList(PointF.CREATOR);
+        noseBottom = in.createTypedArrayList(PointF.CREATOR);
+    }
+
+    public static final Creator<UserMetadata> CREATOR = new Creator<UserMetadata>() {
+        @Override
+        public UserMetadata createFromParcel(Parcel in) {
+            return new UserMetadata(in);
+        }
+
+        @Override
+        public UserMetadata[] newArray(int size) {
+            return new UserMetadata[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(faceContour);
+        dest.writeTypedList(leftEyeBrowTop);
+        dest.writeTypedList(leftEyeBrowBottom);
+        dest.writeTypedList(rightEyeBrowTop);
+        dest.writeTypedList(rightEyeBrowBottom);
+        dest.writeTypedList(leftEyeContour);
+        dest.writeTypedList(rightEyeContour);
+        dest.writeTypedList(leftCheekCenter);
+        dest.writeTypedList(rightCheekCenter);
+        dest.writeTypedList(upperLipBottomContour);
+        dest.writeTypedList(upperLipTopContour);
+        dest.writeTypedList(lowerLipBottomContour);
+        dest.writeTypedList(lowerLipTopContour);
+        dest.writeTypedList(noseBridge);
+        dest.writeTypedList(noseBottom);
+    }
 }

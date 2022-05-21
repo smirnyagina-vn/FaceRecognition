@@ -20,14 +20,16 @@ import java.util.concurrent.Executors
 typealias FaceListener = (face: UserMetadata) -> Unit
 
 class RecognizeActivity : AppCompatActivity() {
+
     private lateinit var viewBinding: ActivityRecognizeBinding
 
     private var imageCapture: ImageCapture? = null
 
     private lateinit var cameraExecutor: ExecutorService
 
-    lateinit var userMove: ArrayList<UserMetadata>
+    private lateinit var userMove: java.util.ArrayList<UserMetadata>
 
+    private lateinit var userLogin : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -39,6 +41,8 @@ class RecognizeActivity : AppCompatActivity() {
 
         userMove = ArrayList()
 
+        userLogin = intent.getStringExtra(UserProfile.USER_LOGIN).toString()
+
         startCamera()
 
         // Set up the listeners for stop rec buttons
@@ -47,15 +51,11 @@ class RecognizeActivity : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         //5 sec for facial expressions recognition
-        val thread = Thread(
+        /*val thread = Thread(
             null, doBackgroundThreadProcessing,
             "Background"
         )
-        thread.start()
-    }
-
-    fun addFaceToList (face: UserMetadata) {
-        userMove.add(face)
+        thread.start()*/
     }
 
     private val doBackgroundThreadProcessing = Runnable {
@@ -65,6 +65,9 @@ class RecognizeActivity : AppCompatActivity() {
 
     private fun stopRecognition() {
         //Stop the activity
+        val extraData = UserProfile(this.userLogin, this.userMove)
+        intent.putExtra("UserMove", extraData)
+        setResult(RESULT_OK, intent)
         finish()
     }
 
@@ -92,7 +95,7 @@ class RecognizeActivity : AppCompatActivity() {
                     it.setAnalyzer(
                         cameraExecutor,
                         FaceAnalyzer{ face ->
-                            addFaceToList(face)
+                            userMove.add(face)
                         }
                     )
                 }

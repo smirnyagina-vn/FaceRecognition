@@ -1,19 +1,15 @@
 package com.example.facerecognition
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import com.google.mlkit.vision.face.FaceContour
-import com.google.mlkit.vision.face.FaceDetection
-import com.google.mlkit.vision.face.FaceDetectorOptions
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
 import android.util.Log
-import android.view.View
 import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -21,8 +17,6 @@ import com.example.facerecognition.databinding.ActivityMainBinding
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import com.google.mlkit.vision.face.FaceDetector
-import kotlin.math.log
 
 
 const val DATABASE_URL = "https://faceauth-007-default-rtdb.europe-west1.firebasedatabase.app/"
@@ -34,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var userDatabase: DatabaseReference
 
-    private lateinit var userProfile: UserProfile
+    private val registration : Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -46,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         // Request camera permissions
         if (allPermissionsGranted()) {
-            // Set up the listeners for start rec buttons
+            // Set up the listeners for start rec button
             viewBinding.authorizationButton.setOnClickListener { startRecognition() }
             viewBinding.registrationButton.setOnClickListener { startRecognition() }
 
@@ -59,30 +53,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun getUserLogin() : String
     {
-        var editTextHello = findViewById(R.id.login_edit_text) as EditText
-        var login = editTextHello.text.toString()
+        val editTextHello = findViewById<EditText>(R.id.login_edit_text)
+        val login = editTextHello.text.toString()
         Log.i("EditText: ", "User login: $login")
         return if (login == "")
             "No login"
         else login
     }
 
-    private fun testDatabase()
+    private fun setUserProfileToDB(userProfile: UserProfile)
     {
-        val testUser = UserProfile("login1")
-
-        userDatabase.child(USER_DIR).child(testUser.userLogin).setValue(testUser)
-
-        getUserByLoginFromDB(testUser.userLogin)
+        userDatabase.child(USER_DIR).child(userProfile.userLogin).setValue(userProfile)
     }
-
 
 
     private fun getUserByLoginFromDB(userLogin : String)
     {
         userDatabase.child(USER_DIR).child(userLogin).get().addOnSuccessListener {
             Log.i("firebase", "Got value ${it.value}")
-            userProfile = UserProfile(it.child(UserProfile.USER_LOGIN).value as String?)
+            val userProfile = UserProfile(it.child(UserProfile.USER_LOGIN).value as String?)
             Log.i("Firebase user", "\nUser login:  ${userProfile.userLogin}")
 
         }.addOnFailureListener{
@@ -95,32 +84,46 @@ class MainActivity : AppCompatActivity() {
             baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults:
-        IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-                viewBinding.authorizationButton.setOnClickListener { startRecognition() }
-                viewBinding.registrationButton.setOnClickListener { startRecognition() }
-            } else {
-                Toast.makeText(this,
-                    "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT).show()
-                finish()
-            }
-        }
-    }
 
     private fun startRecognition() {
         val login = getUserLogin()
-        val intent = Intent(this, RecognizeActivity::class.java)
-        startActivity(intent)
+        activityLauncher.launch(login)
     }
 
 
+    class RecognizeActivityContract : ActivityResultContract<String, UserProfile?>() {
+
+        override fun createIntent(context: Context, input: String?): Intent {
+            return Intent(context, RecognizeActivity::class.java)
+                .putExtra(UserProfile.USER_LOGIN, input)
+        }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): UserProfile? = when {
+            resultCode != Activity.RESULT_OK -> null
+            //else -> intent?.getSerializableExtra("UserMove") as UserProfile?
+            else -> intent?.getParcelableExtra("UserMove") as UserProfile?
+        }
+
+    }
+
+    private val activityLauncher = registerForActivityResult(RecognizeActivityContract()) {
+            result ->
+        if (result != null) {
+            if (this.registration)
+                setUserProfileToDB(result)
+            else
+                userAuthorization(result)
+        }
+
+    }
+
+    private fun userAuthorization(userProfile: UserProfile)
+    {
+
+    }
+
     companion object {
-        private const val TAG = "CameraXApp"
+        private const val TAG = "FaceRecognitionApp"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS =
