@@ -1,18 +1,17 @@
 package com.example.facerecognition
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.PointF
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -21,9 +20,12 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 typealias CustomListener = (profile: UserProfile) -> Unit
 
+const val ThresholdValue : Double = 0.7
 
 class MainActivity : AppCompatActivity(), IUserDatabase {
 
@@ -77,7 +79,6 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
             if (this.registrationMode)
                 setUserProfileToDB(this.userDatabase, result)
             else {
-                //var test = result.userMove[0].allFaceContours
                 getUserByLoginFromDB(this.userDatabase, result.userLogin, result)
             }
         }
@@ -116,6 +117,7 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
         }
     }
 
+
     private fun userAuthorization(userPattern: UserProfile, userProfile: UserProfile)
     {
         //Comparing 2 profiles with cosine
@@ -131,14 +133,30 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
 
     private fun comparingProfiles(first : UserProfile, second : UserProfile) : Boolean
     {
+        var index = 0
+        var result = 0.0
 
+        first.userMove.forEach { firstFrame ->
+            result += cosineSimilarity(firstFrame.allFaceContours, second.userMove[index].allFaceContours)
+            index++
+        }
 
-        return true
+        result /= (index + 1)
+
+        return result >= ThresholdValue
     }
 
-    private fun cosineSimilarity()
+    private fun cosineSimilarity(first: ArrayList<PointF>, second: ArrayList<PointF>) : Double
     {
-
+        var dotProduct = 0.0
+        var normA = 0.0
+        var normB = 0.0
+        for (i in 0 until first.size) {
+            dotProduct += first[i].x * second[i].x + first[i].y * second[i].y
+            normA += first[i].x.toDouble().pow(2.0) + first[i].y.toDouble().pow(2.0)
+            normB += second[i].x.toDouble().pow(2.0) + second[i].y.toDouble().pow(2.0)
+        }
+        return dotProduct / (sqrt(normA) * sqrt(normB))
     }
 
 
