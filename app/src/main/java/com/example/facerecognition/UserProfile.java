@@ -1,10 +1,15 @@
 package com.example.facerecognition;
 
+import android.graphics.PointF;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.RequiresApi;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class UserProfile implements Parcelable {
 
@@ -13,6 +18,11 @@ public class UserProfile implements Parcelable {
     private String userLogin;
     private ArrayList<UserMetadata> userMove;
 
+    public UserProfile()
+    {
+        this.userLogin = "";
+        this.userMove = new ArrayList<UserMetadata>();
+    }
 
     public UserProfile(String userLogin) {
         this.userLogin = userLogin;
@@ -33,6 +43,8 @@ public class UserProfile implements Parcelable {
         userLogin = in.readString();
         userMove = in.createTypedArrayList(UserMetadata.CREATOR);
     }
+
+
 
     public static final Creator<UserProfile> CREATOR = new Creator<UserProfile>() {
         @Override

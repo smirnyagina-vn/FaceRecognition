@@ -2,6 +2,7 @@ package com.example.facerecognition
 
 import android.util.Log
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.getValue
 
 interface IUserDatabase {
 
@@ -14,20 +15,6 @@ interface IUserDatabase {
 
     fun setUserProfileToDB(userDatabase : DatabaseReference, userProfile: UserProfile) {
         userDatabase.child(USERS_DIR).child(userProfile.userLogin).setValue(userProfile)
-    }
-
-    private fun getUserByLoginFromDB(userDatabase : DatabaseReference, userLogin : String) : UserProfile
-    {
-        var userProfile = UserProfile("")
-        userDatabase.child(USERS_DIR).child(userLogin).get().addOnSuccessListener {
-            Log.i("firebase", "Got value ${it.value}")
-            userProfile = UserProfile(it.child(UserProfile.USER_LOGIN).value as UserProfile?)
-            Log.i("Firebase user", "\nUser login:  ${userProfile.userLogin}")
-
-        }.addOnFailureListener{
-            Log.e("firebase", "Error getting data", it)
-        }
-        return userProfile
     }
 
 }

@@ -6,6 +6,7 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class UserMetadata implements Parcelable {
 
@@ -60,6 +61,50 @@ public class UserMetadata implements Parcelable {
         this.noseBottom = noseBottom;
     }
 
+
+    public UserMetadata()
+    {
+        this.faceContour = new ArrayList<PointF>();
+        this.leftEyeBrowTop = new ArrayList<PointF>();
+        this.leftEyeBrowBottom = new ArrayList<PointF>();
+        this.rightEyeBrowTop = new ArrayList<PointF>();
+        this.rightEyeBrowBottom = new ArrayList<PointF>();
+        this.leftEyeContour = new ArrayList<PointF>();
+        this.rightEyeContour = new ArrayList<PointF>();
+        this.leftCheekCenter = new ArrayList<PointF>();
+        this.rightCheekCenter = new ArrayList<PointF>();
+        this.upperLipBottomContour = new ArrayList<PointF>();
+        this.upperLipTopContour = new ArrayList<PointF>();
+        this.lowerLipBottomContour = new ArrayList<PointF>();
+        this.lowerLipTopContour = new ArrayList<PointF>();
+        this.noseBridge = new ArrayList<PointF>();
+        this.noseBottom = new ArrayList<PointF>();
+    }
+
+
+    public ArrayList<PointF> getAllFaceContours()
+    {
+        ArrayList<PointF> result = new ArrayList<PointF>();
+
+        result.addAll(faceContour);
+        result.addAll(leftEyeBrowTop);
+        result.addAll(leftEyeBrowBottom);
+        result.addAll(rightEyeBrowTop);
+        result.addAll(rightEyeBrowBottom);
+        result.addAll(leftEyeContour);
+        result.addAll(rightEyeContour);
+        result.addAll(leftCheekCenter);
+        result.addAll(rightCheekCenter);
+        result.addAll(upperLipBottomContour);
+        result.addAll(upperLipTopContour);
+        result.addAll(lowerLipBottomContour);
+        result.addAll(lowerLipTopContour);
+        result.addAll(noseBridge);
+        result.addAll(noseBottom);
+
+
+        return result;
+    }
 
     protected UserMetadata(Parcel in) {
         faceContour = in.createTypedArrayList(PointF.CREATOR);
