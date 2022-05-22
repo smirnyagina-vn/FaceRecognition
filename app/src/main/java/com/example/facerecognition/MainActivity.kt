@@ -25,7 +25,7 @@ import kotlin.math.sqrt
 
 typealias CustomListener = (profile: UserProfile) -> Unit
 
-const val ThresholdValue : Double = 0.7
+const val ThresholdValue : Double = 0.98
 
 class MainActivity : AppCompatActivity(), IUserDatabase {
 
@@ -120,14 +120,19 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
 
     private fun userAuthorization(userPattern: UserProfile, userProfile: UserProfile)
     {
-        //Comparing 2 profiles with cosine
-        val result = comparingProfiles(userPattern, userProfile)
-
-        if (result)
-            Toast.makeText(applicationContext, "Авторизация успешна", Toast.LENGTH_SHORT).show()
+        if (userPattern.userMove.size > userProfile.userMove.size)
+            Toast.makeText(applicationContext, "Ошибка при авторизации. Попробуйте снова", Toast.LENGTH_SHORT).show()
         else
-            Toast.makeText(applicationContext, "Авторизация провалена", Toast.LENGTH_SHORT).show()
+        {
+            //Comparing 2 profiles with cosine
+            val result = comparingProfiles(userPattern, userProfile)
 
+            if (result)
+                Toast.makeText(applicationContext, "Авторизация успешна", Toast.LENGTH_SHORT).show()
+            else
+                Toast.makeText(applicationContext, "Авторизация провалена", Toast.LENGTH_SHORT).show()
+
+        }
     }
 
 
@@ -137,13 +142,15 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
         var result = 0.0
 
         first.userMove.forEach { firstFrame ->
-            result += cosineSimilarity(firstFrame.allFaceContours, second.userMove[index].allFaceContours)
+            result = cosineSimilarity(firstFrame.allFaceContours, second.userMove[index].allFaceContours)
+            if (result < ThresholdValue)
+                return false
             index++
         }
 
-        result /= (index + 1)
+        //result /= (index + 1)
 
-        return result >= ThresholdValue
+        return true
     }
 
     private fun cosineSimilarity(first: ArrayList<PointF>, second: ArrayList<PointF>) : Double

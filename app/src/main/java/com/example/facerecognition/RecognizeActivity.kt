@@ -51,11 +51,11 @@ class RecognizeActivity : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
 
         //5 sec for facial expressions recognition
-        /*val thread = Thread(
+        val thread = Thread(
             null, doBackgroundThreadProcessing,
             "Background"
         )
-        thread.start()*/
+        thread.start()
     }
 
     private val doBackgroundThreadProcessing = Runnable {
