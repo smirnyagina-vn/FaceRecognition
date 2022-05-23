@@ -1,15 +1,9 @@
 package com.example.facerecognition;
 
-import android.graphics.PointF;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.RequiresApi;
-
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class UserProfile implements Parcelable {
 

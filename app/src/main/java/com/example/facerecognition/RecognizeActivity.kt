@@ -4,15 +4,16 @@ import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.os.Bundle
 import android.util.Log
+import android.util.Size
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.example.facerecognition.databinding.ActivityRecognizeBinding
 import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.face.FaceContour
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
+import com.google.mlkit.vision.face.FaceLandmark
 import java.nio.ByteBuffer
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -89,6 +90,7 @@ class RecognizeActivity : AppCompatActivity() {
 
 
             val imageAnalyzer = ImageAnalysis.Builder()
+                .setTargetResolution(Size(420, 888))
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
                 .also {
@@ -139,7 +141,9 @@ class RecognizeActivity : AppCompatActivity() {
 
                 val options = FaceDetectorOptions.Builder()
                     .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
-                    .setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+                    //.setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+                    .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
+                    .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
                     .build()
 
                 // Get instance of face detector
@@ -153,27 +157,107 @@ class RecognizeActivity : AppCompatActivity() {
                         for (face in faces) {
                             val bounds = face.boundingBox
                             val rotY = face.headEulerAngleY // Head is rotated to the right rotY degrees
-                            val rotZ = face.headEulerAngleZ // Head is tilted sideways rotZ degrees
+                            val rotX = face.headEulerAngleX // Head is tilted sideways rotZ degrees
 
-                            // If contour detection was enabled:
-                            /*val faceContour = face.getContour(FaceContour.FACE)?.points
-                            val leftEyeBrowTop = face.getContour(FaceContour.LEFT_EYEBROW_TOP)?.points
-                            val leftEyeBrowBottom = face.getContour(FaceContour.LEFT_EYEBROW_BOTTOM)?.points
-                            val rightEyeBrowTop = face.getContour(FaceContour.RIGHT_EYEBROW_TOP)?.points
-                            val rightEyeBrowBottom = face.getContour(FaceContour.RIGHT_EYEBROW_BOTTOM)?.points
-                            val leftEyeContour = face.getContour(FaceContour.LEFT_EYE)?.points
-                            val rightEyeContour = face.getContour(FaceContour.RIGHT_EYE)?.points
-                            val leftCheekCenter = face.getContour(FaceContour.LEFT_CHEEK)?.points
-                            val rightCheekCenter = face.getContour(FaceContour.RIGHT_CHEEK)?.points
-                            val upperLipBottomContour = face.getContour(FaceContour.UPPER_LIP_BOTTOM)?.points
-                            val upperLipTopContour = face.getContour(FaceContour.UPPER_LIP_TOP)?.points
-                            val lowerLipBottomContour = face.getContour(FaceContour.LOWER_LIP_BOTTOM)?.points
-                            val lowerLipTopContour = face.getContour(FaceContour.LOWER_LIP_TOP)?.points
-                            val noseBridge = face.getContour(FaceContour.NOSE_BRIDGE)?.points
-                            val noseBottom = face.getContour(FaceContour.NOSE_BOTTOM)?.points
-*/
+                            val rotPos = PointF(rotX, rotY)
+                            var smilingProbability = PointF(0.0F, 0.0F)
+                            var eyeProbability = PointF(0.0F, 0.0F)
+                            var leftEarPos = PointF(0.0F, 0.0F)
+                            var leftCheekPos = PointF(0.0F, 0.0F)
+                            var leftEyePos = PointF(0.0F, 0.0F)
+                            var mouthLeftPos = PointF(0.0F, 0.0F)
+                            var rightEarPos = PointF(0.0F, 0.0F)
+                            var rightEyePos = PointF(0.0F, 0.0F)
+                            var rightCheekPos = PointF(0.0F, 0.0F)
+                            var mouthRightPos = PointF(0.0F, 0.0F)
+                            var mouthBottomPos = PointF(0.0F, 0.0F)
+                            var noseBasePos = PointF(0.0F, 0.0F)
 
-                            val userFace = UserMetadata(
+                            // If landmark detection was enabled (mouth, ears, eyes, cheeks, and
+                            // nose available):
+                            val leftEar = face.getLandmark(FaceLandmark.LEFT_EAR)
+                            leftEar?.let {
+                                leftEarPos = leftEar.position
+                            }
+
+                            val leftCheek = face.getLandmark(FaceLandmark.LEFT_CHEEK)
+                            leftCheek?.let {
+                                leftCheekPos = leftCheek.position
+                            }
+
+                            val leftEye = face.getLandmark(FaceLandmark.LEFT_EYE)
+                            leftEye?.let {
+                                leftEyePos = leftEye.position
+                            }
+
+                            val mouthLeft = face.getLandmark(FaceLandmark.MOUTH_LEFT)
+                            mouthLeft?.let {
+                                mouthLeftPos = mouthLeft.position
+                            }
+
+                            val rightEar = face.getLandmark(FaceLandmark.RIGHT_EAR)
+                            rightEar?.let {
+                                rightEarPos = rightEar.position
+                            }
+
+                            val rightEye = face.getLandmark(FaceLandmark.RIGHT_EYE)
+                            rightEye?.let {
+                                rightEyePos = rightEye.position
+                            }
+
+                            val rightCheek = face.getLandmark(FaceLandmark.RIGHT_CHEEK)
+                            rightCheek?.let {
+                                rightCheekPos = rightCheek.position
+                            }
+
+                            val mouthRight = face.getLandmark(FaceLandmark.MOUTH_RIGHT)
+                            mouthRight?.let {
+                                mouthRightPos = mouthRight.position
+                            }
+
+                            val mouthBottom = face.getLandmark(FaceLandmark.MOUTH_BOTTOM)
+                            mouthBottom?.let {
+                                mouthBottomPos = mouthBottom.position
+                            }
+
+                            val noseBase = face.getLandmark(FaceLandmark.NOSE_BASE)
+                            noseBase?.let {
+                                noseBasePos = noseBase.position
+                            }
+
+                            // If classification was enabled:
+                            if (face.smilingProbability != null) {
+                                smilingProbability.set(face.smilingProbability!!, 0.0F)
+                            }
+
+                            if (face.rightEyeOpenProbability != null &&
+                                    face.leftEyeOpenProbability != null){
+                                eyeProbability.set(
+                                    face.rightEyeOpenProbability!!,
+                                    face.leftEyeOpenProbability!!
+                                )
+                            }
+
+
+                            val userFace =
+                                UserMetadata(
+                                    smilingProbability,
+                                    eyeProbability,
+                                    rotPos,
+                                    leftEarPos,
+                                    leftCheekPos,
+                                    leftEyePos,
+                                    mouthLeftPos,
+                                    rightEarPos,
+                                    rightEyePos,
+                                    rightCheekPos,
+                                    mouthRightPos,
+                                    mouthBottomPos,
+                                    noseBasePos
+                                )
+
+                            // If contour detection was enabled
+                            /*val userFace = UserMetadata(
                                 face.getContour(FaceContour.FACE)?.points as ArrayList<PointF>?,
                                 face.getContour(FaceContour.LEFT_EYEBROW_TOP)?.points as ArrayList<PointF>?,
                                 face.getContour(FaceContour.LEFT_EYEBROW_BOTTOM)?.points as ArrayList<PointF>?,
@@ -189,13 +273,7 @@ class RecognizeActivity : AppCompatActivity() {
                                 face.getContour(FaceContour.LOWER_LIP_TOP)?.points as ArrayList<PointF>?,
                                 face.getContour(FaceContour.NOSE_BRIDGE)?.points as ArrayList<PointF>?,
                                 face.getContour(FaceContour.NOSE_BOTTOM)?.points as ArrayList<PointF>?
-                            )
-
-                            if (face.allContours != null)
-                            {
-                                val allContours = face.allContours
-                                println("\n allContours:$allContours")
-                            }
+                            )*/
 
                             listener(userFace)
 

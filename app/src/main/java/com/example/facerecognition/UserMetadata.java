@@ -4,124 +4,110 @@ import android.graphics.PointF;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class UserMetadata implements Parcelable {
 
-    public ArrayList<PointF> faceContour;
-    public ArrayList<PointF> leftEyeBrowTop;
-    public ArrayList<PointF> leftEyeBrowBottom;
-    public ArrayList<PointF> rightEyeBrowTop;
-    public ArrayList<PointF> rightEyeBrowBottom;
-    public ArrayList<PointF> leftEyeContour;
-    public ArrayList<PointF> rightEyeContour;
-    public ArrayList<PointF> leftCheekCenter;
-    public ArrayList<PointF> rightCheekCenter;
-    public ArrayList<PointF> upperLipBottomContour;
-    public ArrayList<PointF> upperLipTopContour;
-    public ArrayList<PointF> lowerLipBottomContour;
-    public ArrayList<PointF> lowerLipTopContour;
-    public ArrayList<PointF> noseBridge;
-    public ArrayList<PointF> noseBottom;
+    public PointF smilingProbability;
+    public PointF eyeProbability;
+    public PointF rot;
+    public PointF leftEar;
+    public PointF leftCheek;
+    public PointF lefEye;
+    public PointF mouthLeft;
+    public PointF rightEar;
+    public PointF rightEye;
+    public PointF rightCheek;
+    public PointF mouthRight;
+    public PointF mouthBottom;
+    public PointF noseBase;
+
 
     public UserMetadata(
-             ArrayList<PointF> faceContour,
-             ArrayList<PointF> leftEyeBrowTop,
-             ArrayList<PointF> leftEyeBrowBottom,
-             ArrayList<PointF> rightEyeBrowTop,
-             ArrayList<PointF> rightEyeBrowBottom,
-             ArrayList<PointF> leftEyeContour,
-             ArrayList<PointF> rightEyeContour,
-             ArrayList<PointF> leftCheekCenter,
-             ArrayList<PointF> rightCheekCenter,
-             ArrayList<PointF> upperLipBottomContour,
-             ArrayList<PointF> upperLipTopContour,
-             ArrayList<PointF> lowerLipBottomContour,
-             ArrayList<PointF> lowerLipTopContour,
-             ArrayList<PointF> noseBridge,
-             ArrayList<PointF> noseBottom
+            PointF smilingProbability,
+            PointF eyeProbability,
+             PointF rot,
+             PointF leftEar,
+             PointF leftCheek,
+             PointF lefEye,
+             PointF mouthLeft,
+             PointF rightEar,
+             PointF rightEye,
+             PointF rightCheek,
+             PointF mouthRight,
+             PointF mouthBottom,
+             PointF noseBase
     )
     {
-        this.faceContour = faceContour;
-        this.leftEyeBrowTop = leftEyeBrowTop;
-        this.leftEyeBrowBottom = leftEyeBrowBottom;
-        this.rightEyeBrowTop = rightEyeBrowTop;
-        this.rightEyeBrowBottom = rightEyeBrowBottom;
-        this.leftEyeContour = leftEyeContour;
-        this.rightEyeContour = rightEyeContour;
-        this.leftCheekCenter = leftCheekCenter;
-        this.rightCheekCenter = rightCheekCenter;
-        this.upperLipBottomContour = upperLipBottomContour;
-        this.upperLipTopContour = upperLipTopContour;
-        this.lowerLipBottomContour = lowerLipBottomContour;
-        this.lowerLipTopContour = lowerLipTopContour;
-        this.noseBridge = noseBridge;
-        this.noseBottom = noseBottom;
+        this.smilingProbability = smilingProbability;
+        this.eyeProbability = eyeProbability;
+        this.rot = rot;
+        this.leftEar = leftEar;
+        this.leftCheek = leftCheek;
+        this.lefEye = lefEye;
+        this.mouthLeft = mouthLeft;
+        this.rightEar = rightEar;
+        this.rightEye = rightEye;
+        this.rightCheek = rightCheek;
+        this.mouthRight = mouthRight;
+        this.mouthBottom = mouthBottom;
+        this.noseBase = noseBase;
     }
 
 
     public UserMetadata()
     {
-        this.faceContour = new ArrayList<PointF>();
-        this.leftEyeBrowTop = new ArrayList<PointF>();
-        this.leftEyeBrowBottom = new ArrayList<PointF>();
-        this.rightEyeBrowTop = new ArrayList<PointF>();
-        this.rightEyeBrowBottom = new ArrayList<PointF>();
-        this.leftEyeContour = new ArrayList<PointF>();
-        this.rightEyeContour = new ArrayList<PointF>();
-        this.leftCheekCenter = new ArrayList<PointF>();
-        this.rightCheekCenter = new ArrayList<PointF>();
-        this.upperLipBottomContour = new ArrayList<PointF>();
-        this.upperLipTopContour = new ArrayList<PointF>();
-        this.lowerLipBottomContour = new ArrayList<PointF>();
-        this.lowerLipTopContour = new ArrayList<PointF>();
-        this.noseBridge = new ArrayList<PointF>();
-        this.noseBottom = new ArrayList<PointF>();
-    }
-
-
-    public ArrayList<PointF> getAllFaceContours()
-    {
-        ArrayList<PointF> result = new ArrayList<PointF>();
-
-        result.addAll(faceContour);
-        result.addAll(leftEyeBrowTop);
-        result.addAll(leftEyeBrowBottom);
-        result.addAll(rightEyeBrowTop);
-        result.addAll(rightEyeBrowBottom);
-        result.addAll(leftEyeContour);
-        result.addAll(rightEyeContour);
-        result.addAll(leftCheekCenter);
-        result.addAll(rightCheekCenter);
-        result.addAll(upperLipBottomContour);
-        result.addAll(upperLipTopContour);
-        result.addAll(lowerLipBottomContour);
-        result.addAll(lowerLipTopContour);
-        result.addAll(noseBridge);
-        result.addAll(noseBottom);
-
-
-        return result;
+        this.smilingProbability = new PointF();
+        this.eyeProbability = new PointF();
+        this.rot = new PointF();
+        this.leftEar = new PointF();
+        this.leftCheek = new PointF();
+        this.lefEye = new PointF();
+        this.mouthLeft = new PointF();
+        this.rightEar = new PointF();
+        this.rightEye = new PointF();
+        this.rightCheek = new PointF();
+        this.mouthRight = new PointF();
+        this.mouthBottom = new PointF();
+        this.noseBase = new PointF();
     }
 
     protected UserMetadata(Parcel in) {
-        faceContour = in.createTypedArrayList(PointF.CREATOR);
-        leftEyeBrowTop = in.createTypedArrayList(PointF.CREATOR);
-        leftEyeBrowBottom = in.createTypedArrayList(PointF.CREATOR);
-        rightEyeBrowTop = in.createTypedArrayList(PointF.CREATOR);
-        rightEyeBrowBottom = in.createTypedArrayList(PointF.CREATOR);
-        leftEyeContour = in.createTypedArrayList(PointF.CREATOR);
-        rightEyeContour = in.createTypedArrayList(PointF.CREATOR);
-        leftCheekCenter = in.createTypedArrayList(PointF.CREATOR);
-        rightCheekCenter = in.createTypedArrayList(PointF.CREATOR);
-        upperLipBottomContour = in.createTypedArrayList(PointF.CREATOR);
-        upperLipTopContour = in.createTypedArrayList(PointF.CREATOR);
-        lowerLipBottomContour = in.createTypedArrayList(PointF.CREATOR);
-        lowerLipTopContour = in.createTypedArrayList(PointF.CREATOR);
-        noseBridge = in.createTypedArrayList(PointF.CREATOR);
-        noseBottom = in.createTypedArrayList(PointF.CREATOR);
+        smilingProbability = in.readParcelable(PointF.class.getClassLoader());
+        eyeProbability = in.readParcelable(PointF.class.getClassLoader());
+        rot = in.readParcelable(PointF.class.getClassLoader());
+        leftEar = in.readParcelable(PointF.class.getClassLoader());
+        leftCheek = in.readParcelable(PointF.class.getClassLoader());
+        lefEye = in.readParcelable(PointF.class.getClassLoader());
+        mouthLeft = in.readParcelable(PointF.class.getClassLoader());
+        rightEar = in.readParcelable(PointF.class.getClassLoader());
+        rightEye = in.readParcelable(PointF.class.getClassLoader());
+        rightCheek = in.readParcelable(PointF.class.getClassLoader());
+        mouthRight = in.readParcelable(PointF.class.getClassLoader());
+        mouthBottom = in.readParcelable(PointF.class.getClassLoader());
+        noseBase = in.readParcelable(PointF.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(smilingProbability, flags);
+        dest.writeParcelable(eyeProbability, flags);
+        dest.writeParcelable(rot, flags);
+        dest.writeParcelable(leftEar, flags);
+        dest.writeParcelable(leftCheek, flags);
+        dest.writeParcelable(lefEye, flags);
+        dest.writeParcelable(mouthLeft, flags);
+        dest.writeParcelable(rightEar, flags);
+        dest.writeParcelable(rightEye, flags);
+        dest.writeParcelable(rightCheek, flags);
+        dest.writeParcelable(mouthRight, flags);
+        dest.writeParcelable(mouthBottom, flags);
+        dest.writeParcelable(noseBase, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<UserMetadata> CREATOR = new Creator<UserMetadata>() {
@@ -136,27 +122,26 @@ public class UserMetadata implements Parcelable {
         }
     };
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public ArrayList<PointF> getAllFaceContours()
+    {
+        ArrayList<PointF> result = new ArrayList<PointF>();
+
+        result.add(smilingProbability);
+        result.add(eyeProbability);
+        result.add(rot);
+        result.add(leftEar);
+        result.add(leftCheek);
+        result.add(lefEye);
+        result.add(mouthLeft);
+        result.add(rightEar);
+        result.add(rightEye);
+        result.add(rightCheek);
+        result.add(mouthRight);
+        result.add(mouthBottom);
+        result.add(noseBase);
+
+        return result;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(faceContour);
-        dest.writeTypedList(leftEyeBrowTop);
-        dest.writeTypedList(leftEyeBrowBottom);
-        dest.writeTypedList(rightEyeBrowTop);
-        dest.writeTypedList(rightEyeBrowBottom);
-        dest.writeTypedList(leftEyeContour);
-        dest.writeTypedList(rightEyeContour);
-        dest.writeTypedList(leftCheekCenter);
-        dest.writeTypedList(rightCheekCenter);
-        dest.writeTypedList(upperLipBottomContour);
-        dest.writeTypedList(upperLipTopContour);
-        dest.writeTypedList(lowerLipBottomContour);
-        dest.writeTypedList(lowerLipTopContour);
-        dest.writeTypedList(noseBridge);
-        dest.writeTypedList(noseBottom);
-    }
+
 }

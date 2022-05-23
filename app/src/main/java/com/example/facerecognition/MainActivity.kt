@@ -23,9 +23,8 @@ import com.google.firebase.ktx.Firebase
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-typealias CustomListener = (profile: UserProfile) -> Unit
-
 const val ThresholdValue : Double = 0.98
+const val MinimumFrameAmount  : Int = 3
 
 class MainActivity : AppCompatActivity(), IUserDatabase {
 
@@ -77,7 +76,12 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
             result ->
         if (result != null) {
             if (this.registrationMode)
-                setUserProfileToDB(this.userDatabase, result)
+                if (result.userMove.size < MinimumFrameAmount)
+                    Toast.makeText(applicationContext, "Снято недостаточно биометрии. Попробуйте снова", Toast.LENGTH_SHORT).show()
+                else {
+                    setUserProfileToDB(this.userDatabase, result)
+                    Toast.makeText(applicationContext, "Регистрация успешна", Toast.LENGTH_SHORT).show()
+                }
             else {
                 getUserByLoginFromDB(this.userDatabase, result.userLogin, result)
             }
@@ -102,7 +106,7 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
 
 
 
-    fun getUserByLoginFromDB(userDatabase : DatabaseReference, userLogin : String, userProfile : UserProfile)
+    private fun getUserByLoginFromDB(userDatabase : DatabaseReference, userLogin : String, userProfile : UserProfile)
     {
         userDatabase.child(USERS_DIR).child(userLogin).get().addOnSuccessListener {
             Log.i("Firebase", "Got value ${it.value}")
@@ -121,7 +125,7 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
     private fun userAuthorization(userPattern: UserProfile, userProfile: UserProfile)
     {
         if (userPattern.userMove.size > userProfile.userMove.size)
-            Toast.makeText(applicationContext, "Ошибка при авторизации. Попробуйте снова", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Снято недостаточно биометрии. Попробуйте снова", Toast.LENGTH_SHORT).show()
         else
         {
             //Comparing 2 profiles with cosine
@@ -147,8 +151,6 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
                 return false
             index++
         }
-
-        //result /= (index + 1)
 
         return true
     }
