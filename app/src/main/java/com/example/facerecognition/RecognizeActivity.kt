@@ -157,7 +157,8 @@ class RecognizeActivity : AppCompatActivity() {
                         for (face in faces) {
                             val bounds = face.boundingBox
                             val rotY = face.headEulerAngleY // Head is rotated to the right rotY degrees
-                            val rotX = face.headEulerAngleX // Head is tilted sideways rotZ degrees
+                            val rotX = face.headEulerAngleX // Head is tilted sideways rotX degrees
+                            val rotZ = face.headEulerAngleZ
 
                             val rotPos = PointF(rotX, rotY)
                             var smilingProbability = PointF(0.0F, 0.0F)
