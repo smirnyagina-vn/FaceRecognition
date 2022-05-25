@@ -4,13 +4,16 @@ import android.graphics.PointF;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.android.gms.common.util.ArrayUtils;
+
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 public class UserMetadata implements Parcelable {
 
     public PointF smilingProbability;
     public PointF eyeProbability;
-    public PointF rot;
+    //public PointF rot;
     public PointF leftEar;
     public PointF leftCheek;
     public PointF lefEye;
@@ -41,7 +44,7 @@ public class UserMetadata implements Parcelable {
     {
         this.smilingProbability = smilingProbability;
         this.eyeProbability = eyeProbability;
-        this.rot = rot;
+        //this.rot = rot;
         this.leftEar = leftEar;
         this.leftCheek = leftCheek;
         this.lefEye = lefEye;
@@ -59,7 +62,7 @@ public class UserMetadata implements Parcelable {
     {
         this.smilingProbability = new PointF();
         this.eyeProbability = new PointF();
-        this.rot = new PointF();
+        //this.rot = new PointF();
         this.leftEar = new PointF();
         this.leftCheek = new PointF();
         this.lefEye = new PointF();
@@ -75,7 +78,7 @@ public class UserMetadata implements Parcelable {
     protected UserMetadata(Parcel in) {
         smilingProbability = in.readParcelable(PointF.class.getClassLoader());
         eyeProbability = in.readParcelable(PointF.class.getClassLoader());
-        rot = in.readParcelable(PointF.class.getClassLoader());
+        //rot = in.readParcelable(PointF.class.getClassLoader());
         leftEar = in.readParcelable(PointF.class.getClassLoader());
         leftCheek = in.readParcelable(PointF.class.getClassLoader());
         lefEye = in.readParcelable(PointF.class.getClassLoader());
@@ -92,7 +95,7 @@ public class UserMetadata implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(smilingProbability, flags);
         dest.writeParcelable(eyeProbability, flags);
-        dest.writeParcelable(rot, flags);
+        //dest.writeParcelable(rot, flags);
         dest.writeParcelable(leftEar, flags);
         dest.writeParcelable(leftCheek, flags);
         dest.writeParcelable(lefEye, flags);
@@ -128,7 +131,7 @@ public class UserMetadata implements Parcelable {
 
         result.add(smilingProbability);
         result.add(eyeProbability);
-        result.add(rot);
+        //result.add(rot);
         result.add(leftEar);
         result.add(leftCheek);
         result.add(lefEye);
@@ -142,6 +145,5 @@ public class UserMetadata implements Parcelable {
 
         return result;
     }
-
 
 }

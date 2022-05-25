@@ -60,7 +60,7 @@ class RecognizeActivity : AppCompatActivity() {
     }
 
     private val doBackgroundThreadProcessing = Runnable {
-        Thread.sleep(5000)
+        Thread.sleep(6000)
         stopRecognition()
     }
 

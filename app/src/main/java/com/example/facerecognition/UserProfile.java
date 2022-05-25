@@ -33,12 +33,11 @@ public class UserProfile implements Parcelable {
         this.userMove = userProfile.userMove;
     }
 
+
     protected UserProfile(Parcel in) {
         userLogin = in.readString();
         userMove = in.createTypedArrayList(UserMetadata.CREATOR);
     }
-
-
 
     public static final Creator<UserProfile> CREATOR = new Creator<UserProfile>() {
         @Override
