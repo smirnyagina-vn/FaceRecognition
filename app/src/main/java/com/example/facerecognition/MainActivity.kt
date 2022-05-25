@@ -146,13 +146,13 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
         var result = 0.0
 
         first.userMove.forEach { firstFrame ->
-            val test = UserMetadataExtension.getAllFaceContoursXCoordinates(firstFrame)
             val TS_SS_Result_X = VectorSimilarity.TS_SS(UserMetadataExtension.getAllFaceContoursXCoordinates(firstFrame),
-                                                        UserMetadataExtension.getAllFaceContoursYCoordinates(second.userMove[index]))
-            val TS_SS_Result_Y = VectorSimilarity.TS_SS(UserMetadataExtension.getAllFaceContoursXCoordinates(firstFrame),
+                                                        UserMetadataExtension.getAllFaceContoursXCoordinates(second.userMove[index]))
+            val TS_SS_Result_Y = VectorSimilarity.TS_SS(UserMetadataExtension.getAllFaceContoursYCoordinates(firstFrame),
                                                         UserMetadataExtension.getAllFaceContoursYCoordinates(second.userMove[index]))
             Log.i("TS Algorithm", "TS_SS_Result_X: $TS_SS_Result_X")
             Log.i("TS Algorithm","TS_SS_Result_Y: $TS_SS_Result_Y")
+
             result = cosineSimilarity(firstFrame.allFaceContours, second.userMove[index].allFaceContours)
             if (result < ThresholdValue)
                 return false
