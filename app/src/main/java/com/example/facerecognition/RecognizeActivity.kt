@@ -122,6 +122,17 @@ class RecognizeActivity : AppCompatActivity() {
 
     private class FaceAnalyzer(private val listener: FaceListener) : ImageAnalysis.Analyzer {
 
+        val options = FaceDetectorOptions.Builder()
+            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+            //.setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
+            .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
+            .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_ALL)
+            .build()
+
+        // Get instance of face detector
+        val detector = FaceDetection.getClient(options)
+
+
         private fun ByteBuffer.toByteArray(): ByteArray {
             rewind()    // Rewind the buffer to zero
             val data = ByteArray(remaining())
@@ -139,7 +150,7 @@ class RecognizeActivity : AppCompatActivity() {
                 val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
                 // Pass image to an ML Kit Vision API
 
-                val options = FaceDetectorOptions.Builder()
+                /*val options = FaceDetectorOptions.Builder()
                     .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
                     //.setContourMode(FaceDetectorOptions.CONTOUR_MODE_ALL)
                     .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_ALL)
@@ -147,7 +158,7 @@ class RecognizeActivity : AppCompatActivity() {
                     .build()
 
                 // Get instance of face detector
-                val detector = FaceDetection.getClient(options)
+                val detector = FaceDetection.getClient(options)*/
 
                 val result = detector.process(image)
                     .addOnSuccessListener { faces ->

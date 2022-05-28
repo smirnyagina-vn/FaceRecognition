@@ -150,10 +150,23 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
                                                         UserMetadataExtension.getAllFaceContoursXCoordinates(second.userMove[index]))
             val TS_SS_Result_Y = VectorSimilarity.TS_SS(UserMetadataExtension.getAllFaceContoursYCoordinates(firstFrame),
                                                         UserMetadataExtension.getAllFaceContoursYCoordinates(second.userMove[index]))
-            Log.i("TS Algorithm", "TS_SS_Result_X: $TS_SS_Result_X")
-            Log.i("TS Algorithm","TS_SS_Result_Y: $TS_SS_Result_Y")
+
+            Log.i("TS-SS Algorithm","TS_SS Metric Result: $TS_SS_Result_Y")
+
+            val cosineResult = VectorSimilarity.Cosine(UserMetadataExtension.getAllFaceContoursYCoordinates(firstFrame),
+                UserMetadataExtension.getAllFaceContoursYCoordinates(second.userMove[index]))
+            Log.i("Cosine Algorithm", "Cosine Metric Result: $cosineResult")
+
+            val euclidResult = VectorSimilarity.Euclidean(UserMetadataExtension.getAllFaceContoursYCoordinates(firstFrame),
+                UserMetadataExtension.getAllFaceContoursYCoordinates(second.userMove[index]))
+            Log.i("Euclid Algorithm", "Euclid Metric Result: $euclidResult")
 
             result = cosineSimilarity(firstFrame.allFaceContours, second.userMove[index].allFaceContours)
+
+            //Log.i("TS-SS Algorithm", "Result: $TS_SS_Result_Y")
+
+            //Log.i("Cosine metric","Result: $result")
+
             if (result < ThresholdValue)
                 return false
             index++

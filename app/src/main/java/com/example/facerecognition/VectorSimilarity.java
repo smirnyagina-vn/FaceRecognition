@@ -4,6 +4,7 @@ package com.example.facerecognition;
 public class VectorSimilarity {
 
 
+    //3 O(n)
     public static double Cosine(double[] v1, double[] v2) {
         double result = 0;
 
@@ -12,6 +13,7 @@ public class VectorSimilarity {
         return result;
     }
 
+    //O(n)
     public static double VectorSize(double[] vector) {
         double vector_size = 0;
 
@@ -23,6 +25,7 @@ public class VectorSimilarity {
         return vector_size;
     }
 
+    //O(n)
     public static double InnerProduct(double[] v1, double[] v2) {
         double Inner = 0;
         for (int i = 0; i < v1.length; i++) {
@@ -31,6 +34,7 @@ public class VectorSimilarity {
         return Inner;
     }
 
+    //O(n)
     public static double Euclidean(double[] v1, double[] v2) {
         double ED = 0;
         for (int i = 0; i < v1.length; i++) {
@@ -43,6 +47,7 @@ public class VectorSimilarity {
         return ED;
     }
 
+    //O(n)
     public static double Theta(double[] v1, double[] v2) {
         double V = Cosine(v1, v2);
         double theta = Math.acos(V) + Math.toRadians(10);
@@ -50,6 +55,7 @@ public class VectorSimilarity {
         return theta;
     }
 
+    //3 O(n)
     public static double Triangle(double[] v1, double[] v2) {
         double theta = Theta(v1, v2);
         theta = Math.toRadians(theta);
@@ -61,6 +67,7 @@ public class VectorSimilarity {
 
     }
 
+    //2 O(n)
     public static double Magnitude_Difference(double[] v1, double[] v2) {
         double MD = 0;
         MD = Math.abs(VectorSize(v1) - VectorSize(v2));
@@ -68,6 +75,7 @@ public class VectorSimilarity {
         return MD;
     }
 
+    //4 O(n)?
     public static double Sector(double[] v1, double[] v2) {
         double SS = 0;
         SS = Math.PI * (Math.pow((Euclidean(v1, v2) + Magnitude_Difference(v1, v2)), 2)) * (Theta(v1, v2) / 360);
@@ -75,6 +83,7 @@ public class VectorSimilarity {
         return SS;
     }
 
+    //7 O(n)
     public static double TS_SS(double[] v1, double[] v2) {
         double TS_SS = 0;
         TS_SS = Triangle(v1, v2) * Sector(v1, v2);
