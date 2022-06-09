@@ -23,8 +23,17 @@ import com.google.firebase.ktx.Firebase
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-const val ThresholdValue : Double = 0.98
+const val ThresholdValue : Double = 0.80
+const val ThresholdLimit : Double = 10000000.0
 const val MinimumFrameAmount  : Int = 3
+
+var Counter : Int = 0
+var failedCounter : Int = 0
+
+val x_threshold : Double = 75021.42341428669 * 1.1
+val y_threshold : Double = 1240173.2186338573 * 1.1
+
+
 
 class MainActivity : AppCompatActivity(), IUserDatabase {
 
@@ -80,6 +89,7 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
                     Toast.makeText(applicationContext, "Снято недостаточно биометрии. Попробуйте снова", Toast.LENGTH_SHORT).show()
                 else {
                     setUserProfileToDB(this.userDatabase, result)
+                    Log.d("Frames amount","${result.userMove.size.toString()}")
                     Toast.makeText(applicationContext, "Регистрация успешна", Toast.LENGTH_SHORT).show()
                 }
             else {
@@ -129,12 +139,19 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
         else
         {
             //Comparing 2 profiles with cosine
+            Counter++
+            Log.d("TS_SS Count ","$Counter")
             val result = comparingProfiles(userPattern, userProfile)
 
             if (result)
                 Toast.makeText(applicationContext, "Авторизация успешна", Toast.LENGTH_SHORT).show()
-            else
-                Toast.makeText(applicationContext, "Авторизация провалена", Toast.LENGTH_SHORT).show()
+            else {
+                failedCounter++
+                Log.d("TS_SS failedCounter ","$failedCounter")
+
+                Toast.makeText(applicationContext, "Авторизация провалена", Toast.LENGTH_SHORT)
+                    .show()
+            }
 
         }
     }
@@ -151,24 +168,37 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
             val TS_SS_Result_Y = VectorSimilarity.TS_SS(UserMetadataExtension.getAllFaceContoursYCoordinates(firstFrame),
                                                         UserMetadataExtension.getAllFaceContoursYCoordinates(second.userMove[index]))
 
-            Log.i("TS-SS Algorithm","TS_SS Metric Result: $TS_SS_Result_Y")
+            Log.d("TS-SS Algorithm","\nTS_SS Metric Result Y: $TS_SS_Result_Y\n" +
+                                             "TS_SS Metric Result X: $TS_SS_Result_X")
 
-            val cosineResult = VectorSimilarity.Cosine(UserMetadataExtension.getAllFaceContoursYCoordinates(firstFrame),
-                UserMetadataExtension.getAllFaceContoursYCoordinates(second.userMove[index]))
-            Log.i("Cosine Algorithm", "Cosine Metric Result: $cosineResult")
+            val res_x = (-1)*((TS_SS_Result_X / ThresholdLimit)-1)
+            val res_y = (-1)*((TS_SS_Result_Y / ThresholdLimit)-1)
 
-            val euclidResult = VectorSimilarity.Euclidean(UserMetadataExtension.getAllFaceContoursYCoordinates(firstFrame),
-                UserMetadataExtension.getAllFaceContoursYCoordinates(second.userMove[index]))
-            Log.i("Euclid Algorithm", "Euclid Metric Result: $euclidResult")
+            Log.d("TS-SS Algorithm","\nres_y: $res_y\n" +
+                    "res_x: $res_x")
 
-            result = cosineSimilarity(firstFrame.allFaceContours, second.userMove[index].allFaceContours)
+            if ((res_x < ThresholdValue) or (res_y < ThresholdValue))
+                return false
+
+            //if ((TS_SS_Result_X > x_threshold) or (TS_SS_Result_Y > y_threshold))
+            //    return false
+
+            //val cosineResult = VectorSimilarity.Cosine(UserMetadataExtension.getAllFaceContoursYCoordinates(firstFrame),
+            //    UserMetadataExtension.getAllFaceContoursYCoordinates(second.userMove[index]))
+            //Log.i("Cosine Algorithm", "Cosine Metric Result: $cosineResult")
+
+            //val euclidResult = VectorSimilarity.Euclidean(UserMetadataExtension.getAllFaceContoursYCoordinates(firstFrame),
+            //    UserMetadataExtension.getAllFaceContoursYCoordinates(second.userMove[index]))
+            //Log.i("Euclid Algorithm", "Euclid Metric Result: $euclidResult")
+
+            //result = cosineSimilarity(firstFrame.allFaceContours, second.userMove[index].allFaceContours)
 
             //Log.i("TS-SS Algorithm", "Result: $TS_SS_Result_Y")
 
             //Log.i("Cosine metric","Result: $result")
 
-            if (result < ThresholdValue)
-                return false
+            //if (result < ThresholdValue)
+            //    return false
             index++
         }
 
