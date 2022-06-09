@@ -193,9 +193,6 @@ class MainActivity : AppCompatActivity(), IUserDatabase {
 
             //result = cosineSimilarity(firstFrame.allFaceContours, second.userMove[index].allFaceContours)
 
-            //Log.i("TS-SS Algorithm", "Result: $TS_SS_Result_Y")
-
-            //Log.i("Cosine metric","Result: $result")
 
             //if (result < ThresholdValue)
             //    return false
